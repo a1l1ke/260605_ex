@@ -8,8 +8,11 @@ dotenv.config();
 
 // 의존성
 const express = require("express");
+// Provider
 const { ChatGoogleGenerativeAI } = require("@langchain/google-genai");
 const { ChatGroq } = require("@langchain/groq");
+const { ChatOpenAI } = require("@langchain/openai");
+// Langchain
 const { PromptTemplate } = require("@langchain/core/prompts");
 const { HumanMessage } = require("@langchain/core/messages");
 
@@ -35,6 +38,8 @@ app.post("/chat", async (req, res) => {
     case "groq":
       model = await useGroq(modelName);
       break;
+    case "nim":
+      model = await useNim(modelName);
     default:
       throw new Error("지원하지 않는 Provider");
   }
@@ -99,6 +104,15 @@ async function useGroq(model) {
     temperature: 0.7,
     maxOutputTokens: 512,
   });
+}
+
+async function useNim(model) {
+  // npm i @langchain/openai
+  // https://www.npmjs.com/package/@langchain/openai
+  // https://build.nvidia.com/models
+  // [Model]
+  // ...
+  return new ChatOpenAI();
 }
 
 // 리스너
