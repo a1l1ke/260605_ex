@@ -11,7 +11,8 @@ const express = require("express");
 const {} = require("@langchain/core");
 
 // 서버 세팅
-const PORT = process.env.PORT ?? 3000;
+// const PORT = process.env.PORT ?? 3000;
+const PORT = process.env.PORT_01 ?? 3000;
 const app = express();
 
 // 미들웨어
@@ -19,8 +20,8 @@ app.use(express.json());
 
 // 라우터, 엔드포인트 ...
 app.post("/chat", async (req, res) => {
-  console.log(...req.body);
-  res.json({ ...req.body });
+  console.log(req.body);
+  res.json(req.body);
 });
 
 // 리스너
