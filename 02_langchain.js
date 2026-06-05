@@ -22,14 +22,14 @@ app.use(express.json());
 // 라우터, 엔드포인트 ...
 app.post("/chat", async (req, res) => {
   console.log(req.body);
-  const { provider, model, ask } = req.body;
+  const { provider, modelName, ask } = req.body;
   console.log(`프로바이더 : ${provider}`);
-  let result;
+  let model;
   switch (provider) {
     case "google-genai":
       // npm i @langchain/google-genai
       // https://www.npmjs.com/package/@langchain/google-genai
-      result = await useGoogleGenAI(model, ask);
+      model = await useGoogleGenAI(modelName, ask);
       break;
 
     default:
@@ -40,7 +40,12 @@ app.post("/chat", async (req, res) => {
 
 // 커스텀 함수
 async function useGoogleGenAI(model, ask) {
-    
+  return new ChatGoogleGenerativeAI({
+    apiKey: process.env.GEMINI_API_KEY,
+    model,
+    temperature: 0.7,
+    maxOutputTokens: 512,
+  });
 }
 
 // 리스너
