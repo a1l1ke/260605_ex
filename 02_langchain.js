@@ -31,6 +31,10 @@ app.post("/chat", async (req, res) => {
     case "google-genai":
       // npm i @langchain/google-genai
       // https://www.npmjs.com/package/@langchain/google-genai
+      // [Model]
+      // gemini-3.1-flash-lite
+      // gemma-4-26b-a4b-it // moe
+      // gemma-4-31b-it // dense
       model = await useGoogleGenAI(modelName, ask);
       break;
 
