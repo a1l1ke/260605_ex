@@ -98,14 +98,14 @@ async function useGoogleGenAI(model) {
 async function useGroq(model) {
   // [Model]
   // openai/gpt-oss-20b // 빠름
-  // openai/gpt-oss-120b // 생각 깊음
+  // openai/gpt-oss-120b // 생각 깊음 <- JSON Output을 목표로 하면 좀 생각이 깊은 모델 (패러미터가 높은...)
   // qwen/qwen3-32b // 추론형 모델 (thinking)
   // meta-llama/llama-4-scout-17b-16e-instruct
   return new ChatGroq({
     apiKey: process.env.GROQ_API_KEY,
     model,
-    temperature: 0.7,
-    maxOutputTokens: 512,
+    temperature: 0,
+    // maxOutputTokens: 512,
   });
 }
 
@@ -121,8 +121,8 @@ async function useNim(model) {
       baseURL: "https://integrate.api.nvidia.com/v1",
     },
     model,
-    temperature: 0.7,
-    maxOutputTokens: 512,
+    temperature: 0,
+    // maxOutputTokens: 512,
   });
 }
 
