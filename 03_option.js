@@ -10,7 +10,7 @@ const { ChatGroq } = require("@langchain/groq");
 const { ChatOpenAI } = require("@langchain/openai");
 // Core
 const { PromptTemplate } = require("@langchain/core/prompts");
-const { HumanMessage } = require("@langchain/core/messages");
+const { HumanMessage, SystemMessage } = require("@langchain/core/messages");
 
 // 서버 구동
 const PORT = process.env.PORT_03 ?? 3000;
@@ -55,17 +55,33 @@ app.post("/chat", async (req, res) => {
     },
   };
 
+  //   const promptTemplate = PromptTemplate.fromTemplate(
+  //     "다음 고객 리뷰를 객관적으로 분석 : {review}, 뒤의 형식으로 구현, 마크다운 등으로 감싸지 말고 결과만 작성 : {schema}",
+  //   );
   const promptTemplate = PromptTemplate.fromTemplate(
-    "다음 고객 리뷰를 객관적으로 분석 : {review}, 뒤의 형식으로 구현, 마크다운 등으로 감싸지 말고 결과만 작성 : {schema}",
+    "다음 고객 리뷰를 객관적으로 분석 : {review}",
   );
   const formattedPrompt = await promptTemplate.format({
     review,
-    schema,
+    // schema,
   });
 
   console.log("[모델 호출]");
 
-  const response = await model.invoke([new HumanMessage(formattedPrompt)]);
+  // System Instruction
+  const systemPromptTemplate = PromptTemplate.fromTemplate(
+    "뒤의 형식으로 구현, 마크다운 등으로 감싸지 말고 결과만 작성. properties의 구성으로 json을 만들 것. : {schema}",
+  );
+  const systemformattedPrompt = await systemPromptTemplate.format({
+    schema,
+  });
+
+  const response = await model.invoke([
+    // new SystemMessage("대답은 질문과 상관없이 일본어를 사용함."),
+    new SystemMessage(systemformattedPrompt),
+    new SystemMessage("요약문의 경우에는 맨끝에 '냥'을 붙일 것."),
+    new HumanMessage(formattedPrompt),
+  ]);
 
   console.log("[결과 정리]");
 
