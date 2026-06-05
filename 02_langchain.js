@@ -8,8 +8,9 @@ dotenv.config();
 
 // 의존성
 const express = require("express");
-const {} = require("@langchain/core");
 const { ChatGoogleGenerativeAI } = require("@langchain/google-genai");
+const { PromptTemplate } = require("@langchain/core/prompts");
+const { HumanMessage } = require("@langchain/core/messages");
 
 // 서버 세팅
 // const PORT = process.env.PORT ?? 3000;
@@ -21,9 +22,10 @@ app.use(express.json());
 
 // 라우터, 엔드포인트 ...
 app.post("/chat", async (req, res) => {
-  console.log(req.body);
+  console.log("[요청 해석]");
+  //   console.log(req.body);
   const { provider, modelName, ask } = req.body;
-  console.log(`프로바이더 : ${provider}`);
+  //   console.log(`프로바이더 : ${provider}`);
   let model;
   switch (provider) {
     case "google-genai":
@@ -35,7 +37,34 @@ app.post("/chat", async (req, res) => {
     default:
       throw new Error("지원하지 않는 Provider");
   }
-  res.json(req.body);
+
+  console.log("[프롬프트 포맷팅]");
+
+  const promptTemplate = PromptTemplate.fromTemplate(
+    "당신은 MBTI가 {mbti}인 {job}입니다. 본인의 성격과 직업적 특징에 맞춰 뒤에 질문에 대답해주세요. {ask}",
+  );
+  const formattedPrompt = await promptTemplate.format({
+    // mbti: "INTJ",
+    mbti: "ESFP",
+    ask: ask,
+    // job: "부트캠프 강사",
+    job: "취업준비생",
+  });
+
+  console.log("[모델 호출]");
+
+  const response = await model.invoke([new HumanMessage(formattedPrompt)]);
+
+  console.log("[결과 정리]");
+
+  console.log(response.text);
+
+  console.log("[응답 전송]");
+
+  //   res.json(req.body);
+  res.json({
+    answer: response.text,
+  });
 });
 
 // 커스텀 함수
