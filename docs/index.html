@@ -33,6 +33,29 @@
     <script>
       const form = document.querySelector("#chatForm");
       const container = document.querySelector("#chatContainer");
+      const chatHistory = [];
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const chatHistoryStorage = JSON.parse(
+          localStorage.getItem("chatHistory") || "[]",
+        );
+        chatHistory.push(...chatHistoryStorage);
+        for (const h of chatHistory) {
+          const { type, content } = h;
+          console.log(h);
+          if (type === "ask") {
+            const p = document.createElement("p");
+            p.textContent = content;
+            container.append(p);
+          } else {
+            // type === "answer"
+            const div = document.createElement("div");
+            div.innerHTML = DOMPurify.sanitize(marked.parse(content));
+            container.append(div);
+          }
+        }
+      });
+
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
         const formData = new FormData(event.target);
@@ -40,6 +63,7 @@
         console.log(payload);
 
         const { ask } = payload;
+        chatHistory.push({ type: "ask", content: ask });
         const p = document.createElement("p");
         p.textContent = ask;
         container.append(p);
@@ -56,6 +80,9 @@
         const div = document.createElement("div");
         div.innerHTML = DOMPurify.sanitize(marked.parse(answer));
         container.append(div);
+        chatHistory.push({ type: "answer", content: answer });
+
+        localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
       });
     </script>
   </body>
