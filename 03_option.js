@@ -1,8 +1,4 @@
-// 새로운 터미널을 하단에 (+)로 만들어서...
-// npm i @langchain/core
-// https://www.npmjs.com/package/@langchain/core
-
-// 환경변수 불러오기
+// 환경변수
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -12,24 +8,21 @@ const express = require("express");
 const { ChatGoogleGenerativeAI } = require("@langchain/google-genai");
 const { ChatGroq } = require("@langchain/groq");
 const { ChatOpenAI } = require("@langchain/openai");
-// Langchain
+// Core
 const { PromptTemplate } = require("@langchain/core/prompts");
 const { HumanMessage } = require("@langchain/core/messages");
 
-// 서버 세팅
-// const PORT = process.env.PORT ?? 3000;
-const PORT = process.env.PORT_02 ?? 3000;
+// 서버 구동
+const PORT = process.env.PORT_03 ?? 3000;
 const app = express();
 
 // 미들웨어
 app.use(express.json());
 
-// 라우터, 엔드포인트 ...
+// 엔드포인트
 app.post("/chat", async (req, res) => {
   console.log("[요청 해석]");
-  //   console.log(req.body);
   const { provider, modelName, ask } = req.body;
-  //   console.log(`프로바이더 : ${provider}`);
   let model;
   switch (provider) {
     case "google-genai":
@@ -51,10 +44,8 @@ app.post("/chat", async (req, res) => {
     "당신은 MBTI가 {mbti}인 {job}입니다. 본인의 성격과 직업적 특징에 맞춰 뒤에 질문에 대답해주세요. {ask}",
   );
   const formattedPrompt = await promptTemplate.format({
-    // mbti: "INTJ",
     mbti: "ESFP",
     ask: ask,
-    // job: "부트캠프 강사",
     job: "취업준비생",
   });
 
@@ -68,7 +59,6 @@ app.post("/chat", async (req, res) => {
 
   console.log("[응답 전송]");
 
-  //   res.json(req.body);
   res.json({
     answer: response.text,
   });
@@ -76,8 +66,6 @@ app.post("/chat", async (req, res) => {
 
 // 커스텀 함수
 async function useGoogleGenAI(model) {
-  // npm i @langchain/google-genai
-  // https://www.npmjs.com/package/@langchain/google-genai
   // [Model]
   // gemini-3.1-flash-lite
   // gemma-4-26b-a4b-it // moe
@@ -91,9 +79,6 @@ async function useGoogleGenAI(model) {
 }
 
 async function useGroq(model) {
-  // npm i @langchain/groq
-  // https://www.npmjs.com/package/@langchain/groq
-  // https://console.groq.com/docs/rate-limits
   // [Model]
   // openai/gpt-oss-20b // 빠름
   // openai/gpt-oss-120b // 생각 깊음
@@ -108,10 +93,6 @@ async function useGroq(model) {
 }
 
 async function useNim(model) {
-  // npm i @langchain/openai
-  // https://www.npmjs.com/package/@langchain/openai
-  // https://build.nvidia.com/models?filters=nimType%3Anim_type_preview
-  // https://integrate.api.nvidia.com/v1/models
   // [Model]
   // deepseek-ai/deepseek-v4-flash
   // deepseek-ai/deepseek-v4-pro
