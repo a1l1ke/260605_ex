@@ -1,7 +1,8 @@
 {
   "scripts": {
     "01": "nodemon 01_review.js",
-    "02": "nodemon 02_langchain.js"
+    "02": "nodemon 02_langchain.js",
+    "03": "nodemon 03_option.js"
   },
   "dependencies": {
     "@langchain/core": "^1.1.48",

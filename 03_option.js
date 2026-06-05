@@ -22,7 +22,7 @@ app.use(express.json());
 // 엔드포인트
 app.post("/chat", async (req, res) => {
   console.log("[요청 해석]");
-  const { provider, modelName, ask } = req.body;
+  const { provider, modelName, review } = req.body;
   let model;
   switch (provider) {
     case "google-genai":
@@ -40,13 +40,27 @@ app.post("/chat", async (req, res) => {
 
   console.log("[프롬프트 포맷팅]");
 
+  const schema = {
+    type: "object",
+    propeties: {
+      sentiment: {
+        type: "string",
+        enum: ["positive", "negative", "neutral"],
+        description: "리뷰의 긍정, 부정, 중립 감정 분석 결과",
+      },
+      summary: {
+        type: "string",
+        description: "리뷰를 요약한 한국어 텍스트",
+      },
+    },
+  };
+
   const promptTemplate = PromptTemplate.fromTemplate(
-    "당신은 MBTI가 {mbti}인 {job}입니다. 본인의 성격과 직업적 특징에 맞춰 뒤에 질문에 대답해주세요. {ask}",
+    "다음 고객 리뷰를 객관적으로 분석 : {review}, 뒤의 형식으로 구현 : {schema}",
   );
   const formattedPrompt = await promptTemplate.format({
-    mbti: "ESFP",
-    ask: ask,
-    job: "취업준비생",
+    review,
+    schema,
   });
 
   console.log("[모델 호출]");
@@ -55,12 +69,13 @@ app.post("/chat", async (req, res) => {
 
   console.log("[결과 정리]");
 
+  //   console.log(response.text);
   console.log(response.text);
 
   console.log("[응답 전송]");
 
   res.json({
-    answer: response.text,
+    analysis: JSON.parse(response.text),
   });
 });
 
@@ -73,8 +88,10 @@ async function useGoogleGenAI(model) {
   return new ChatGoogleGenerativeAI({
     apiKey: process.env.GEMINI_API_KEY,
     model,
-    temperature: 0.7,
-    maxOutputTokens: 512,
+    // temperature: 0.7,
+    temperature: 0, // 고정된 응답의 형식을 바란다면 창의성/임의성을 의미하는 temperature는 최소로 (0)
+    // maxOutputTokens: 512,
+    json: true,
   });
 }
 
