@@ -42,7 +42,7 @@
         chatHistory.push(...chatHistoryStorage);
         for (const h of chatHistory) {
           const { type, content } = h;
-          console.log(h);
+          //   console.log(h);
           if (type === "ask") {
             const p = document.createElement("p");
             p.textContent = content;
@@ -60,6 +60,7 @@
         event.preventDefault();
         const formData = new FormData(event.target);
         const payload = Object.fromEntries(formData);
+        payload["history"] = [...chatHistory]; // 복사해서
         console.log(payload);
 
         const { ask } = payload;

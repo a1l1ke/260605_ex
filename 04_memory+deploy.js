@@ -11,7 +11,11 @@ const { ChatGroq } = require("@langchain/groq");
 const { ChatOpenAI } = require("@langchain/openai");
 // Core
 const { PromptTemplate } = require("@langchain/core/prompts");
-const { HumanMessage, SystemMessage } = require("@langchain/core/messages");
+const {
+  HumanMessage,
+  SystemMessage,
+  AIMessage,
+} = require("@langchain/core/messages");
 
 // 서버 구동
 const PORT = process.env.PORT_04 ?? process.env.PORT ?? 3000;
@@ -28,6 +32,7 @@ app.use(cors()); // whitelist -> 어제 실습.
 app.post("/chat", async (req, res) => {
   console.log("[요청 해석]");
   const { provider, modelName, ask, history } = req.body;
+  console.log("history", history);
   let model;
   switch (provider) {
     case "google-genai":
@@ -63,10 +68,37 @@ app.post("/chat", async (req, res) => {
     mbti,
   });
 
-  const response = await model.invoke([
-    new SystemMessage(systemformattedPrompt),
-    new HumanMessage(formattedPrompt),
-  ]);
+  const prompts = [];
+
+  // const response = await model.invoke([
+  //   new SystemMessage(systemformattedPrompt),
+  //   new HumanMessage(formattedPrompt),
+  // ]);
+
+  // 시스템 인스트럭션
+  prompts.push(new SystemMessage(systemformattedPrompt));
+
+  // 히스토리
+  // 2가지
+  // 1. 소화하는 히스토리 자체에 제약 -> 10개까지만.
+  // for (const h of history) {
+  for (const h of history.slice(
+    Math.max(0, history.length - 10),
+    history.length,
+  )) {
+    const { type, content } = h;
+    prompts.push(
+      type == "ask" ? new HumanMessage(content) : new AIMessage(content),
+    );
+  }
+  // 2. compact -> 히스토리를 상대적으로 짧은 텍스트로 요약 (ai가 스스로)
+
+  // 최종적 요청 사항
+  prompts.push(new HumanMessage(formattedPrompt));
+
+  console.log(prompts);
+
+  const response = await model.invoke(prompts);
 
   console.log("[결과 정리]");
 
