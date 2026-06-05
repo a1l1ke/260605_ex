@@ -9,6 +9,7 @@ dotenv.config();
 // 의존성
 const express = require("express");
 const { ChatGoogleGenerativeAI } = require("@langchain/google-genai");
+const { ChatGroq } = require("@langchain/groq");
 const { PromptTemplate } = require("@langchain/core/prompts");
 const { HumanMessage } = require("@langchain/core/messages");
 
@@ -29,15 +30,11 @@ app.post("/chat", async (req, res) => {
   let model;
   switch (provider) {
     case "google-genai":
-      // npm i @langchain/google-genai
-      // https://www.npmjs.com/package/@langchain/google-genai
-      // [Model]
-      // gemini-3.1-flash-lite
-      // gemma-4-26b-a4b-it // moe
-      // gemma-4-31b-it // dense
-      model = await useGoogleGenAI(modelName, ask);
+      model = await useGoogleGenAI(modelName);
       break;
-
+    case "groq":
+      model = await useGroq(modelName);
+      break;
     default:
       throw new Error("지원하지 않는 Provider");
   }
@@ -72,9 +69,32 @@ app.post("/chat", async (req, res) => {
 });
 
 // 커스텀 함수
-async function useGoogleGenAI(model, ask) {
+async function useGoogleGenAI(model) {
+  // npm i @langchain/google-genai
+  // https://www.npmjs.com/package/@langchain/google-genai
+  // [Model]
+  // gemini-3.1-flash-lite
+  // gemma-4-26b-a4b-it // moe
+  // gemma-4-31b-it // dense
   return new ChatGoogleGenerativeAI({
     apiKey: process.env.GEMINI_API_KEY,
+    model,
+    temperature: 0.7,
+    maxOutputTokens: 512,
+  });
+}
+
+async function useGroq(model) {
+  // npm i @langchain/groq
+  // https://www.npmjs.com/package/@langchain/groq
+  // https://console.groq.com/docs/rate-limits
+  // [Model]
+  // openai/gpt-oss-20b // 빠름
+  // openai/gpt-oss-120b // 생각 깊음
+  // qwen/qwen3-32b // 추론형 모델 (thinking)
+  // meta-llama/llama-4-scout-17b-16e-instruct
+  return new ChatGroq({
+    apiKey: process.env.GROQ_API_KEY,
     model,
     temperature: 0.7,
     maxOutputTokens: 512,
