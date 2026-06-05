@@ -56,7 +56,7 @@ app.post("/chat", async (req, res) => {
   };
 
   const promptTemplate = PromptTemplate.fromTemplate(
-    "다음 고객 리뷰를 객관적으로 분석 : {review}, 뒤의 형식으로 구현 : {schema}",
+    "다음 고객 리뷰를 객관적으로 분석 : {review}, 뒤의 형식으로 구현, 마크다운 등으로 감싸지 말고 결과만 작성 : {schema}",
   );
   const formattedPrompt = await promptTemplate.format({
     review,
@@ -114,7 +114,6 @@ async function useNim(model) {
   // deepseek-ai/deepseek-v4-flash
   // deepseek-ai/deepseek-v4-pro
   // google/gemma-4-31b-it
-  // nvidia/nemotron-4-340b-instruct
   return new ChatOpenAI({
     apiKey: process.env.NIM_API_KEY,
     configuration: {
