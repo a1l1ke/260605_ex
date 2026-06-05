@@ -40,6 +40,7 @@ app.post("/chat", async (req, res) => {
       break;
     case "nim":
       model = await useNim(modelName);
+      break;
     default:
       throw new Error("지원하지 않는 Provider");
   }
@@ -109,10 +110,22 @@ async function useGroq(model) {
 async function useNim(model) {
   // npm i @langchain/openai
   // https://www.npmjs.com/package/@langchain/openai
-  // https://build.nvidia.com/models
+  // https://build.nvidia.com/models?filters=nimType%3Anim_type_preview
+  // https://integrate.api.nvidia.com/v1/models
   // [Model]
-  // ...
-  return new ChatOpenAI();
+  // deepseek-ai/deepseek-v4-flash
+  // deepseek-ai/deepseek-v4-pro
+  // google/gemma-4-31b-it
+  // nvidia/nemotron-4-340b-instruct
+  return new ChatOpenAI({
+    apiKey: process.env.NIM_API_KEY,
+    configuration: {
+      baseURL: "https://integrate.api.nvidia.com/v1",
+    },
+    model,
+    temperature: 0.7,
+    maxOutputTokens: 512,
+  });
 }
 
 // 리스너
