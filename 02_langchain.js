@@ -9,6 +9,7 @@ dotenv.config();
 // 의존성
 const express = require("express");
 const {} = require("@langchain/core");
+const { ChatGoogleGenerativeAI } = require("@langchain/google-genai");
 
 // 서버 세팅
 // const PORT = process.env.PORT ?? 3000;
@@ -21,8 +22,26 @@ app.use(express.json());
 // 라우터, 엔드포인트 ...
 app.post("/chat", async (req, res) => {
   console.log(req.body);
+  const { provider, model, ask } = req.body;
+  console.log(`프로바이더 : ${provider}`);
+  let result;
+  switch (provider) {
+    case "google-genai":
+      // npm i @langchain/google-genai
+      // https://www.npmjs.com/package/@langchain/google-genai
+      result = await useGoogleGenAI(model, ask);
+      break;
+
+    default:
+      break;
+  }
   res.json(req.body);
 });
+
+// 커스텀 함수
+async function useGoogleGenAI(model, ask) {
+    
+}
 
 // 리스너
 app.listen(PORT, () => {
