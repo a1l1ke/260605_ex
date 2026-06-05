@@ -5,9 +5,9 @@ dotenv.config();
 
 // 의존성
 const express = require("express");
-const PORT = process.env.PORT ?? 3000; // 기본값
 
 // 서버 세팅
+const PORT = process.env.PORT ?? 3000; // 기본값
 const app = express();
 
 app.listen(PORT, () => {
