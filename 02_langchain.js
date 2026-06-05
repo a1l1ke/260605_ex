@@ -33,7 +33,7 @@ app.post("/chat", async (req, res) => {
       break;
 
     default:
-      break;
+      throw new Error("지원하지 않는 Provider");
   }
   res.json(req.body);
 });
