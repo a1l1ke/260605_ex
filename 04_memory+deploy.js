@@ -20,7 +20,9 @@ const app = express();
 // 미들웨어
 app.use(express.json());
 // npm i cors
+// https://www.npmjs.com/package/cors
 app.use(cors()); // whitelist -> 어제 실습.
+// 보안적으로는 최악의 선택 중 하나임을 일단은 명심.
 
 // 엔드포인트
 app.post("/chat", async (req, res) => {
