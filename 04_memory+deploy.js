@@ -4,6 +4,7 @@ dotenv.config();
 
 // 의존성
 const express = require("express");
+const cors = require("cors");
 // Provider
 const { ChatGoogleGenerativeAI } = require("@langchain/google-genai");
 const { ChatGroq } = require("@langchain/groq");
@@ -18,6 +19,8 @@ const app = express();
 
 // 미들웨어
 app.use(express.json());
+// npm i cors
+app.use(cors()); // whitelist -> 어제 실습.
 
 // 엔드포인트
 app.post("/chat", async (req, res) => {

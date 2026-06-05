@@ -15,8 +15,8 @@
   </head>
   <body>
     <form id="chatForm">
-      <input name="provider" value="goolge-genai" />
-      <input name="model" value="gemini-3.1-flash-lite" />
+      <input name="provider" value="google-genai" />
+      <input name="modelName" value="gemini-3.1-flash-lite" />
       <textarea name="ask" style="resize: none">
 개발자로 성공하는 법이 뭐죠?</textarea
       >
@@ -30,11 +30,15 @@
     <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
     <script>
       const form = document.querySelector("#chatForm");
-      form.addEventListener("submit", (event) => {
+      form.addEventListener("submit", async (event) => {
         event.preventDefault();
         const formData = new FormData(event.target);
         const payload = Object.fromEntries(formData);
         console.log(payload);
+        // 링크는 나중에 수정할 것임
+        const API_URL = "http://localhost:3044/chat";
+        const response = await axios.post(API_URL, payload);
+        console.log(response.data);
       });
     </script>
   </body>
